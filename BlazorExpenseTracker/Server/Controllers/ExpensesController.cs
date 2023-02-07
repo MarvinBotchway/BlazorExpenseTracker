@@ -1,4 +1,5 @@
 ﻿using BlazorExpenseTracker.Server.Data;
+using BlazorExpenseTracker.Server.Services.ExpenseService;
 using BlazorExpenseTracker.Shared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,63 +11,40 @@ namespace BlazorExpenseTracker.Server.Controllers
     [ApiController]
     public class ExpensesController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly IExpenseService _expenseService;
 
-        public ExpensesController(DataContext context)
+        public ExpensesController(IExpenseService expenseService)
         {
-            _context = context;
+            _expenseService = expenseService;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<ExpenseModel>>> GetAllExpensesAsync()
         {
-            var response = await _context.Expenses.ToListAsync();
+            List<ExpenseModel> response = await _expenseService.GetExpensesAsync();
             return Ok(response);
         }
 
         [HttpPost]
         public async Task<ActionResult<ExpenseModel>> CreateExpenseAsync(ExpenseModel expense)
         {
-            var response = await _context.Expenses.AddAsync(expense);
-            await _context.SaveChangesAsync();
-            return Ok(response.Entity);
+            ExpenseModel response = await _expenseService.CreateExpensesAsync(expense);
+            return Ok(response);
 
         }
         [HttpPut]
         [Route("{id}")]
         public async Task<ActionResult<ExpenseModel>> EditExpenseAsync(ExpenseModel expense, int id)
         {
-            ExpenseModel? response = null;
-            var DbExpense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == id);
-
-            if (DbExpense != null)
-            {
-                DbExpense.Title = expense.Title;
-                DbExpense.Description = expense.Description;
-                DbExpense.Amount = expense.Amount;
-                DbExpense.CreatedAt = expense.CreatedAt;
-
-                await _context.SaveChangesAsync();
-
-                response = DbExpense;
-
-            }
-
-            return Ok(response);
+            ExpenseModel resoponse = await _expenseService.EditExpenseAsync(expense, id);
+            return Ok(resoponse);
         }
 
         [HttpDelete]
         [Route("{id}")]
         public async Task RemoveExpense(int id)
         {
-            var DbExpense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id==id);
-
-            if (DbExpense != null )
-            {
-                _context.Expenses.Remove(DbExpense);
-            }
-
-            await _context.SaveChangesAsync();
+            await _expenseService.RemoveExpense(id);
         }
     }
 }

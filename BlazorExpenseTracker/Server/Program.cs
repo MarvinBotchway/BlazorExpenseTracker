@@ -1,4 +1,5 @@
 using BlazorExpenseTracker.Server.Data;
+using BlazorExpenseTracker.Server.Services.ExpenseService;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -19,6 +20,11 @@ builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "BlazorExpenseTracker API", Version = "v1" });
 });
+
+
+
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
+
 
 var app = builder.Build();
 
