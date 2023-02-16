@@ -46,5 +46,14 @@ namespace BlazorExpenseTracker.Server.Controllers
         {
             await _expenseService.RemoveExpense(id);
         }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<ExpenseModel>> GetExpenseDetailsAsync(int id)
+        {
+            var response = await _expenseService.GetExpenseDetailsAsync(id);
+            return Ok(response);
+        }
+
     }
 }

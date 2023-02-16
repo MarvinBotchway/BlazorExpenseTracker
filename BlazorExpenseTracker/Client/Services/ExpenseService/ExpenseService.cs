@@ -1,5 +1,6 @@
 ﻿using BlazorExpenseTracker.Shared.Models;
 using System.Net.Http.Json;
+using System.Runtime.InteropServices;
 
 namespace BlazorExpenseTracker.Client.Services.ExpenseService
 {
@@ -24,9 +25,11 @@ namespace BlazorExpenseTracker.Client.Services.ExpenseService
 
         public async Task<ExpenseModel> EditExpenseAsync(ExpenseModel expense, int id)
         {
-            var response = await _http.PutAsJsonAsync<ExpenseModel>("/api/Expenses/{id}", expense);
+            var response = await _http.PutAsJsonAsync<ExpenseModel>($"/api/Expenses/{id}", expense);
             return await response.Content.ReadFromJsonAsync<ExpenseModel>();
         }
+
+        
 
         public async Task<List<ExpenseModel>> GetExpensesAsync()
         {
@@ -43,9 +46,9 @@ namespace BlazorExpenseTracker.Client.Services.ExpenseService
             return Expenses;
         }
 
-        public Task RemoveExpense(int id)
+        public async Task RemoveExpense(int id)
         {
-            throw new NotImplementedException();
+            await _http.DeleteAsync($"/api/Expenses/{id}");
         }
 
         private void CalculateTotalExpenses()
@@ -56,6 +59,13 @@ namespace BlazorExpenseTracker.Client.Services.ExpenseService
             {
                 TotalExpenses += expense.Amount;
             }
+        }
+
+        public async Task<ExpenseModel> GetExpenseDetailsAsync(int id)
+        {
+            var response = await _http.GetFromJsonAsync<ExpenseModel>($"/api/Expenses/{id}");
+            return response;
+
         }
     }
 }

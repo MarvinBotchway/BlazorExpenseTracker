@@ -10,5 +10,7 @@ namespace BlazorExpenseTracker.Server.Services.ExpenseService
         Task<ExpenseModel> EditExpenseAsync(ExpenseModel expense, int id);
         Task RemoveExpense(int id);
 
+        Task<ExpenseModel> GetExpenseDetailsAsync(int id);
+
     }
 }

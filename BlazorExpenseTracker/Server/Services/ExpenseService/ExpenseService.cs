@@ -16,6 +16,8 @@ namespace BlazorExpenseTracker.Server.Services.ExpenseService
 
         public async Task<ExpenseModel> CreateExpensesAsync(ExpenseModel expense)
         {
+            expense.CreatedAt = DateTime.UtcNow;
+
             var response = await _context.Expenses.AddAsync(expense);
             await _context.SaveChangesAsync();
             return response.Entity;
@@ -41,9 +43,11 @@ namespace BlazorExpenseTracker.Server.Services.ExpenseService
             return response;
         }
 
+        
         public async Task<List<ExpenseModel>> GetExpensesAsync()
         {
-            var response = await _context.Expenses.ToListAsync();
+            //Use time to order the list of Expenses
+            var response = await _context.Expenses.OrderByDescending(e => e.CreatedAt).ToListAsync();
 
             return response;
         }
@@ -58,5 +62,12 @@ namespace BlazorExpenseTracker.Server.Services.ExpenseService
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<ExpenseModel> GetExpenseDetailsAsync(int id)
+        {
+            var response = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == id);
+            return response;
+        }
+
     }
 }
